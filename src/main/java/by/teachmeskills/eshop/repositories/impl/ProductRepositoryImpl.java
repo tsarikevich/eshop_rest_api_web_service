@@ -1,6 +1,7 @@
 package by.teachmeskills.eshop.repositories.impl;
 
 import by.teachmeskills.eshop.entities.Category;
+import by.teachmeskills.eshop.entities.Order;
 import by.teachmeskills.eshop.entities.Product;
 import by.teachmeskills.eshop.repositories.ProductRepository;
 import org.springframework.stereotype.Repository;
@@ -72,17 +73,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Map<Product, Integer> getProductsByOrderId(int id) {
-        Map<Product, Integer> products = new HashMap<>();
-        Query queryProducts = entityManager.createQuery("select p from Product p where p in (select key(o.products) from Order o where o.id=:id)");
-        queryProducts.setParameter("id", id);
-        Query queryQuantity = entityManager.createNativeQuery("select op.quantity from eshop.products p inner join eshop.order_products op on p.id=op.product_id where op.order_id=:id");
-        queryQuantity.setParameter("id", id);
-        Iterator<Product> productsFromQuery = queryProducts.getResultList().iterator();
-        Iterator<Integer> quantityFromQuery = queryQuantity.getResultList().iterator();
-        while (productsFromQuery.hasNext()&&quantityFromQuery.hasNext()){
-            products.put(productsFromQuery.next(),quantityFromQuery.next());
-        }
-        return products;
+        Order order = entityManager.find(Order.class, id);
+        return order.getProducts();
     }
 }
 
