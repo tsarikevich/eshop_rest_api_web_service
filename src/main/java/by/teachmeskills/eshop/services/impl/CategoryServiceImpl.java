@@ -6,9 +6,11 @@ import by.teachmeskills.eshop.dto.converters.CategoryConverter;
 import by.teachmeskills.eshop.dto.converters.ImageConverter;
 import by.teachmeskills.eshop.entities.Category;
 import by.teachmeskills.eshop.entities.Image;
+import by.teachmeskills.eshop.exceptions.UpdateException;
 import by.teachmeskills.eshop.repositories.impl.CategoryRepositoryImpl;
 import by.teachmeskills.eshop.repositories.impl.ImageRepositoryImpl;
 import by.teachmeskills.eshop.services.CategoryService;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Log4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepositoryImpl categoryRepository;
     private final ImageRepositoryImpl imageRepository;
@@ -69,7 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = categoryConverter.fromDto(categoryDto);
-        if (Optional.ofNullable(category.getName()).isEmpty() || isCategoryInBase(category)) {
+        if (Optional.ofNullable(category.getName()).isEmpty() || checkCategoryExists(category)) {
             return null;
         } else {
             Category createdCategory = create(category);
@@ -78,14 +81,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto updateCategory(CategoryDto categoryDto) {
+    public CategoryDto updateCategory(CategoryDto categoryDto) throws UpdateException {
         try {
             Category category = categoryConverter.fromDto(categoryDto);
             Category updatedCategory = categoryRepository.update(category);
             CategoryDto updatedCategoryDto = categoryConverter.toDto(updatedCategory);
             return updatedCategoryDto;
         } catch (Exception e) {
-            return null;
+            throw new UpdateException("Category cannot be updated");
         }
     }
 
@@ -94,12 +97,13 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             categoryRepository.delete(categoryDto.getId());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return e.getMessage();
         }
         return "Category was successfully deleted";
     }
 
-    private boolean isCategoryInBase(Category category) {
+    private boolean checkCategoryExists(Category category) {
         Category categoryFromDB = categoryRepository.getCategoryFromDBByName(category);
         return Optional.ofNullable(categoryFromDB).isPresent();
     }

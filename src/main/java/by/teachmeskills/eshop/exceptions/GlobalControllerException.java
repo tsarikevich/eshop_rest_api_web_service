@@ -20,4 +20,10 @@ public class GlobalControllerException {
         log.error(e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(UpdateException.class)
+    public ResponseEntity<String> UpdateCategoryException(Exception e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

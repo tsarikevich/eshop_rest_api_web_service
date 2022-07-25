@@ -2,17 +2,13 @@ package by.teachmeskills.eshop.services.impl;
 
 import by.teachmeskills.eshop.dto.UserDto;
 import by.teachmeskills.eshop.dto.converters.UserConverter;
-import by.teachmeskills.eshop.entities.Order;
-import by.teachmeskills.eshop.entities.Product;
 import by.teachmeskills.eshop.entities.User;
 import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.repositories.impl.UserRepositoryImpl;
 import by.teachmeskills.eshop.services.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -48,20 +44,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findUserDtoByLoginAndPassword(UserDto userDto) {
-        if (Optional.ofNullable(userDto).isPresent()
-                && Optional.ofNullable(userDto.getLogin()).isPresent()
-                && Optional.ofNullable(userDto.getPassword()).isPresent()) {
-            User user = userConverter.fromDto(userDto);
-            User loggedUser = userRepository.getUserFromBaseByLoginAndPassword(user);
-            List<Order> productIntegerMap = loggedUser.getOrders();
-            Map<Product, Integer> productIntegerMap1 = new HashMap<>();
-            for (Order order : productIntegerMap) {
-                productIntegerMap1=productRepository.getProductsByOrderId(order.getId());
-            }
+    public UserDto findUserByLoginAndPassword(String login, String password) {
+        if (Optional.ofNullable(login).isPresent()
+                && Optional.ofNullable(password).isPresent()) {
+            User loggedUser = userRepository.getUserByLoginAndPassword(login, password);
             if (Optional.ofNullable(loggedUser).isPresent()) {
-                UserDto userDtoFromDb = userConverter.toDto(loggedUser);
-                return userDtoFromDb;
+                return userConverter.toDto(loggedUser);
             } else {
                 return null;
             }
@@ -70,19 +58,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findUserDtoById(UserDto userDto) {
-        if (Optional.ofNullable(userDto).isPresent()
-                && Optional.ofNullable(userDto.getId()).isPresent()) {
-            User user = userConverter.fromDto(userDto);
-            User loggedUser = userRepository.getUserFromBaseById(user);
-            if (Optional.ofNullable(loggedUser).isPresent()) {
-                UserDto userDtoFromDb = userConverter.toDto(loggedUser);
-                return userDtoFromDb;
-            } else {
-                return null;
-            }
+    public UserDto findUserById(int id) {
+        User loggedUser = userRepository.findUserById(id);
+        if (Optional.ofNullable(loggedUser).isPresent()) {
+            return userConverter.toDto(loggedUser);
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -94,20 +76,19 @@ public class UserServiceImpl implements UserService {
                 && Optional.ofNullable(userDto.getEmail()).isPresent()
                 && Optional.ofNullable(userDto.getPassword()).isPresent()) {
             User user = userConverter.fromDto(userDto);
-            if (isUserInBase(user)) {
+            if (checkUserExists(user)) {
                 return null;
             } else {
                 User createdUser = userRepository.create(user);
-                UserDto createdUserDto = userConverter.toDto(createdUser);
-                return createdUserDto;
+                return userConverter.toDto(createdUser);
             }
         } else {
             return null;
         }
     }
 
-    private boolean isUserInBase(User user) {
-        User userFromBase = userRepository.getUserFromBaseById(user);
+    private boolean checkUserExists(User user) {
+        User userFromBase = userRepository.findUserById(user.getId());
         return Optional.ofNullable(userFromBase).isPresent();
     }
 }

@@ -2,6 +2,7 @@ package by.teachmeskills.eshop.services;
 
 import by.teachmeskills.eshop.dto.ProductDto;
 import by.teachmeskills.eshop.entities.Product;
+import by.teachmeskills.eshop.exceptions.UpdateException;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface ProductService extends BaseService<Product> {
 
     ProductDto createProduct(ProductDto productDto);
 
-    ProductDto updateProduct(ProductDto productDto);
+    ProductDto updateProduct(ProductDto productDto) throws UpdateException;
 
     String deleteProduct(ProductDto productDto);
 }

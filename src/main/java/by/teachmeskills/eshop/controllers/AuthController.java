@@ -42,7 +42,7 @@ public class AuthController {
             )})
     @PostMapping
     public ResponseEntity<UserDto> login(@Valid @RequestBody(required = false) UserDto userDto) {
-        UserDto logUserDto = userService.findUserDtoByLoginAndPassword(userDto);
+        UserDto logUserDto = userService.findUserByLoginAndPassword(userDto.getLogin(),userDto.getPassword());
         if (Optional.ofNullable(logUserDto).isPresent()) {
             return new ResponseEntity<>(logUserDto, HttpStatus.OK);
         } else {

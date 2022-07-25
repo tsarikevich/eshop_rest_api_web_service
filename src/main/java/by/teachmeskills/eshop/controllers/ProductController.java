@@ -1,6 +1,7 @@
 package by.teachmeskills.eshop.controllers;
 
 import by.teachmeskills.eshop.dto.ProductDto;
+import by.teachmeskills.eshop.exceptions.UpdateException;
 import by.teachmeskills.eshop.services.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> openProductPage(@Valid @Min(1) @PathVariable int id) {
+    public ResponseEntity<ProductDto> getProductData(@Valid @Min(1) @PathVariable int id) {
         ProductDto productDto = productService.getProductData(id);
         if (Optional.ofNullable(productDto).isPresent()) {
             return new ResponseEntity<>(productDto, HttpStatus.OK);
@@ -49,7 +50,7 @@ public class ProductController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) throws UpdateException {
         ProductDto updatedProduct = productService.updateProduct(productDto);
         if (Optional.ofNullable(updatedProduct).isPresent()) {
             return new ResponseEntity<>(updatedProduct, HttpStatus.CREATED);

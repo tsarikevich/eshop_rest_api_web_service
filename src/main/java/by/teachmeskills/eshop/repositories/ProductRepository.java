@@ -12,7 +12,7 @@ public interface ProductRepository {
 
     List<Product> findProductsByRequest(String request);
 
-    Product getProductFromDBByName(Product product);
+    Product getProductByName(String nameProduct);
 
     Map<Product, Integer> getProductsByOrderId(int id);
 }

@@ -6,9 +6,11 @@ import by.teachmeskills.eshop.dto.converters.ImageConverter;
 import by.teachmeskills.eshop.dto.converters.ProductConverter;
 import by.teachmeskills.eshop.entities.Image;
 import by.teachmeskills.eshop.entities.Product;
+import by.teachmeskills.eshop.exceptions.UpdateException;
 import by.teachmeskills.eshop.repositories.impl.ImageRepositoryImpl;
 import by.teachmeskills.eshop.repositories.impl.ProductRepositoryImpl;
 import by.teachmeskills.eshop.services.ProductService;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Log4j
 public class ProductServiceImpl implements ProductService {
     private ProductRepositoryImpl productRepository;
     private ImageRepositoryImpl imageRepository;
@@ -63,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto createProduct(ProductDto productDto) {
         try {
             Product product = productConverter.fromDto(productDto);
-            if (Optional.ofNullable(product.getName()).isEmpty() || isProductInBase(product)) {
+            if (Optional.ofNullable(product.getName()).isEmpty() || checkProductExists(product)) {
                 return null;
             } else {
                 Product createdProduct = create(product);
@@ -75,14 +78,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(ProductDto productDto) {
+    public ProductDto updateProduct(ProductDto productDto) throws UpdateException {
         try {
             Product product = productConverter.fromDto(productDto);
             Product updatedProduct = productRepository.update(product);
             ProductDto updatedProductDto = productConverter.toDto(updatedProduct);
             return updatedProductDto;
         } catch (Exception e) {
-            return null;
+            throw new UpdateException("Product cannot be updated");
         }
     }
 
@@ -91,13 +94,14 @@ public class ProductServiceImpl implements ProductService {
         try {
             delete(productDto.getId());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return e.getMessage();
         }
         return "Product was successfully deleted";
     }
 
-    private boolean isProductInBase(Product product) {
-        Product productFromDB = productRepository.getProductFromDBByName(product);
+    private boolean checkProductExists(Product product) {
+        Product productFromDB = productRepository.getProductByName(product.getName());
         return Optional.ofNullable(productFromDB).isPresent();
     }
 

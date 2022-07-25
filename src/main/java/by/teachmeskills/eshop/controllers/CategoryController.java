@@ -23,7 +23,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> openCategoryProductPage(@RequestParam(CATEGORY_ID) int id) {
+    public ResponseEntity<List<ProductDto>> getCategoryData(@RequestParam(CATEGORY_ID) int id) {
         return new ResponseEntity<>(productService.getCategoryProductsData(id), HttpStatus.OK);
     }
 }

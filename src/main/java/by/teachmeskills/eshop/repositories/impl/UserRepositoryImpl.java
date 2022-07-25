@@ -35,22 +35,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getUserFromBaseByLoginAndPassword(User user) {
+    public User getUserByLoginAndPassword(String login, String password) {
         Query query = entityManager.createQuery("select u from User u where u.login=:login and u.password=:password");
-        query.setParameter("login", user.getLogin());
-        query.setParameter("password", user.getPassword());
-        List<User> userList = query.getResultList();
-        if (userList.size() != 0) {
-            return (User) query.getSingleResult();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public User getUserFromBaseById(User user) {
-        Query query = entityManager.createQuery("select u from User u where u.id=:id");
-        query.setParameter("id", user.getId());
+        query.setParameter("login", login);
+        query.setParameter("password", password);
         List<User> userList = query.getResultList();
         if (userList.size() != 0) {
             return (User) query.getSingleResult();
@@ -61,6 +49,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findUserById(int id) {
-        return entityManager.find(User.class, id);
+        Query query = entityManager.createQuery("select u from User u where u.id=:id");
+        query.setParameter("id", id);
+        List<User> userList = query.getResultList();
+        if (userList.size() != 0) {
+            return (User) query.getSingleResult();
+        } else {
+            return null;
+        }
     }
 }

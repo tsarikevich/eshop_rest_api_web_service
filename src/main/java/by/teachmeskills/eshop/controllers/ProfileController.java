@@ -21,8 +21,8 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDto> getProfilePage(@RequestBody UserDto userDto) {
-        UserDto logUserDto = userService.findUserDtoById(userDto);
+    public ResponseEntity<UserDto> getUserProfileData(@RequestBody UserDto userDto) {
+        UserDto logUserDto = userService.findUserById(userDto.getId());
         if (Optional.ofNullable(logUserDto).isPresent()) {
             return new ResponseEntity<>(logUserDto, HttpStatus.FOUND);
         } else {

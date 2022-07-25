@@ -60,9 +60,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product getProductFromDBByName(Product product) {
+    public Product getProductByName(String nameProduct) {
         Query query = entityManager.createQuery("select p from Product p where p.name=:name");
-        query.setParameter("name", product.getName());
+        query.setParameter("name", nameProduct);
         List<Category> categoryList = query.getResultList();
         if (categoryList.size() != 0) {
             return (Product) query.getSingleResult();

@@ -21,7 +21,7 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> registration(@RequestBody UserDto userDto) {
         UserDto createdUserDto = userService.registration(userDto);
         if (Optional.ofNullable(createdUserDto).isPresent()) {
             return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);

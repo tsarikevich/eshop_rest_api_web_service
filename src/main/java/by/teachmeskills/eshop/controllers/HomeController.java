@@ -1,6 +1,7 @@
 package by.teachmeskills.eshop.controllers;
 
 import by.teachmeskills.eshop.dto.CategoryDto;
+import by.teachmeskills.eshop.exceptions.UpdateException;
 import by.teachmeskills.eshop.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -47,7 +48,7 @@ public class HomeController {
                     description = "Categories not found - forbidden operation"
             )})
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getHomePage() {
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
     }
 
@@ -62,7 +63,7 @@ public class HomeController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto) throws UpdateException {
         CategoryDto createdCategoryDto = categoryService.updateCategory(categoryDto);
         if (Optional.ofNullable(createdCategoryDto).isPresent()) {
             return new ResponseEntity<>(createdCategoryDto, HttpStatus.OK);

@@ -4,9 +4,9 @@ import by.teachmeskills.eshop.dto.UserDto;
 import by.teachmeskills.eshop.entities.User;
 
 public interface UserService extends BaseService<User> {
-    UserDto findUserDtoByLoginAndPassword(UserDto userDto);
+    UserDto findUserByLoginAndPassword(String login, String password);
 
-    UserDto findUserDtoById(UserDto userDto);
+    UserDto findUserById(int id);
 
     UserDto registration(UserDto userDto);
 }
