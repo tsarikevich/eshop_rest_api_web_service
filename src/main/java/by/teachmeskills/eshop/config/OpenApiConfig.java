@@ -80,6 +80,14 @@ public class OpenApiConfig {
     }
 
     @Bean
+    public GroupedOpenApi publicCartApi() {
+        return GroupedOpenApi.builder()
+                .group("Cart API")
+                .pathsToMatch("/cart/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI customOpenApi(@Value("${application.description}") String appDescription,
                                  @Value("${application.version}") String appVersion) {
         return new OpenAPI()
