@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 @Service
 @Log4j
 public class ProductServiceImpl implements ProductService {
-    private ProductRepositoryImpl productRepository;
-    private ImageRepositoryImpl imageRepository;
-    private ProductConverter productConverter;
-    private ImageConverter imageConverter;
+    private final ProductRepositoryImpl productRepository;
+    private final ImageRepositoryImpl imageRepository;
+    private final ProductConverter productConverter;
+    private final ImageConverter imageConverter;
 
     public ProductServiceImpl(ProductRepositoryImpl productRepository, ImageRepositoryImpl imageRepository, ProductConverter productConverter, ImageConverter imageConverter) {
         this.productRepository = productRepository;
@@ -67,12 +67,14 @@ public class ProductServiceImpl implements ProductService {
         try {
             Product product = productConverter.fromDto(productDto);
             if (Optional.ofNullable(product.getName()).isEmpty() || checkProductExists(product)) {
+                log.warn("Product doesn't exists in the DB or product name is null");
                 return null;
             } else {
                 Product createdProduct = create(product);
                 return productConverter.toDto(createdProduct);
             }
         } catch (Exception e) {
+            log.warn(e.getMessage());
             return null;
         }
     }
@@ -82,8 +84,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             Product product = productConverter.fromDto(productDto);
             Product updatedProduct = productRepository.update(product);
-            ProductDto updatedProductDto = productConverter.toDto(updatedProduct);
-            return updatedProductDto;
+            return productConverter.toDto(updatedProduct);
         } catch (Exception e) {
             throw new UpdateException("Product cannot be updated");
         }
@@ -108,14 +109,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getCategoryProductsData(int id) {
         List<Product> categoryProducts = productRepository.getProductsByCategoryId(id);
-        List<ProductDto> productDtoList = categoryProducts.stream().map(productConverter::toDto).toList();
-        return productDtoList;
+        return categoryProducts.stream().map(productConverter::toDto).toList();
     }
 
     @Override
     public List<ProductDto> findAllProductsByRequest(String request) {
         List<Product> products = productRepository.findProductsByRequest(request);
-        List<ProductDto> productDtoList = products.stream().map(productConverter::toDto).toList();
-        return productDtoList;
+        return products.stream().map(productConverter::toDto).toList();
     }
 }

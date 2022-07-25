@@ -73,6 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = categoryConverter.fromDto(categoryDto);
         if (Optional.ofNullable(category.getName()).isEmpty() || checkCategoryExists(category)) {
+           log.info("Category name is null OR category's already been in the DB");
             return null;
         } else {
             Category createdCategory = create(category);
@@ -85,8 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             Category category = categoryConverter.fromDto(categoryDto);
             Category updatedCategory = categoryRepository.update(category);
-            CategoryDto updatedCategoryDto = categoryConverter.toDto(updatedCategory);
-            return updatedCategoryDto;
+            return categoryConverter.toDto(updatedCategory);
         } catch (Exception e) {
             throw new UpdateException("Category cannot be updated");
         }

@@ -3,24 +3,23 @@ package by.teachmeskills.eshop.services.impl;
 import by.teachmeskills.eshop.dto.UserDto;
 import by.teachmeskills.eshop.dto.converters.UserConverter;
 import by.teachmeskills.eshop.entities.User;
-import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.repositories.impl.UserRepositoryImpl;
 import by.teachmeskills.eshop.services.UserService;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j
 public class UserServiceImpl implements UserService {
     private final UserRepositoryImpl userRepository;
     private final UserConverter userConverter;
-    private final ProductRepository productRepository;
 
-    public UserServiceImpl(UserRepositoryImpl userRepository, UserConverter userConverter, ProductRepository productRepository) {
+    public UserServiceImpl(UserRepositoryImpl userRepository, UserConverter userConverter) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
-        this.productRepository = productRepository;
     }
 
     @Override
@@ -51,9 +50,11 @@ public class UserServiceImpl implements UserService {
             if (Optional.ofNullable(loggedUser).isPresent()) {
                 return userConverter.toDto(loggedUser);
             } else {
+                log.warn("User doesn't exist in the DB");
                 return null;
             }
         }
+        log.warn("Login or password don't satisfy input conditions");
         return null;
     }
 
@@ -63,6 +64,7 @@ public class UserServiceImpl implements UserService {
         if (Optional.ofNullable(loggedUser).isPresent()) {
             return userConverter.toDto(loggedUser);
         } else {
+            log.warn("User doesn't exist in the DB");
             return null;
         }
     }
@@ -77,12 +79,14 @@ public class UserServiceImpl implements UserService {
                 && Optional.ofNullable(userDto.getPassword()).isPresent()) {
             User user = userConverter.fromDto(userDto);
             if (checkUserExists(user)) {
+                log.warn("User doesn't exist in the DB");
                 return null;
             } else {
                 User createdUser = userRepository.create(user);
                 return userConverter.toDto(createdUser);
             }
         } else {
+            log.warn("UserDto parameters don't satisfy input conditions");
             return null;
         }
     }
