@@ -2,7 +2,7 @@ package by.teachmeskills.eshop.dto.converters;
 
 import by.teachmeskills.eshop.dto.OrderDto;
 import by.teachmeskills.eshop.entities.Order;
-import by.teachmeskills.eshop.repositories.ProductRepository;
+import by.teachmeskills.eshop.repositories.OrderRepository;
 import by.teachmeskills.eshop.repositories.UserRepository;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 public class OrderConverter {
     private final ProductConverter productConverter;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
-    public OrderConverter(ProductConverter productConverter, UserRepository userRepository, ProductRepository productRepository) {
+    public OrderConverter(ProductConverter productConverter, UserRepository userRepository, OrderRepository orderRepository) {
         this.productConverter = productConverter;
         this.userRepository = userRepository;
-        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
     }
 
     public OrderDto toDto(Order order) {
@@ -28,7 +28,7 @@ public class OrderConverter {
                         .price(o.getPrice())
                         .userId(o.getUser().getId())
                         .products(o.getProducts().keySet().stream().collect(Collectors.toMap(
-                                p->productConverter.toDto(p).toString(),
+                                p -> productConverter.toDto(p).toString(),
                                 o.getProducts()::get)))
                         .build())
                 .orElse(null);
@@ -39,8 +39,8 @@ public class OrderConverter {
                         .id(od.getId())
                         .date(od.getDate())
                         .price(od.getPrice())
-                        .user(userRepository.findUserById(od.getUserId()))
-                        .products(productRepository.getProductsByOrderId(orderDto.getId()))
+                        .user(userRepository.findById(od.getUserId()).get())
+                        .products(orderRepository.getOrderById(od.getId()).getProducts())
                         .build())
                 .orElse(null);
     }

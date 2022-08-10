@@ -1,8 +1,10 @@
 package by.teachmeskills.eshop.repositories;
 
 import by.teachmeskills.eshop.entities.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface CategoryRepository {
-    Category findById(int id);
-    Category getCategoryFromDBByName(Category category);
+@Repository
+public interface CategoryRepository extends JpaRepository<Category,Integer> {
+    Category findCategoryById(int id);
 }

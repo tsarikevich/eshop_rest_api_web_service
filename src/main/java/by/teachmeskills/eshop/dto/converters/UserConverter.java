@@ -7,15 +7,20 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class UserConverter {
     private final OrderConverter orderConverter;
     private final OrderRepository orderRepository;
+    private final RoleConverter roleConverter;
 
-    public UserConverter(OrderConverter orderConverter, OrderRepository orderRepository) {
+    public UserConverter(OrderConverter orderConverter, OrderRepository orderRepository, RoleConverter roleConverter) {
         this.orderConverter = orderConverter;
         this.orderRepository = orderRepository;
+        this.roleConverter = roleConverter;
     }
 
     public UserDto toDto(User user) {
@@ -29,6 +34,7 @@ public class UserConverter {
                         .password(u.getPassword())
                         .balance(u.getBalance())
                         .orders(Optional.ofNullable(u.getOrders()).map(orders -> orders.stream().map(orderConverter::toDto).toList()).orElse(List.of()))
+                        .roles(Optional.ofNullable(u.getRoles()).map(roles -> roles.stream().map(roleConverter::toDto).collect(Collectors.toSet())).orElse(Set.of()))
                         .build())
                 .orElse(null);
     }

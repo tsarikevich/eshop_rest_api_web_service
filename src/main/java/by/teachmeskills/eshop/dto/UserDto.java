@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Data
@@ -26,4 +27,5 @@ public class UserDto {
     private LocalDate birthDate;
     private BigDecimal balance;
     private List<OrderDto> orders;
+    private Set<RoleDto> roles;
 }

@@ -7,8 +7,8 @@ import by.teachmeskills.eshop.dto.converters.ProductConverter;
 import by.teachmeskills.eshop.entities.Image;
 import by.teachmeskills.eshop.entities.Product;
 import by.teachmeskills.eshop.exceptions.UpdateException;
-import by.teachmeskills.eshop.repositories.impl.ImageRepositoryImpl;
-import by.teachmeskills.eshop.repositories.impl.ProductRepositoryImpl;
+import by.teachmeskills.eshop.repositories.ImageRepository;
+import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.services.ProductService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 @Service
 @Log4j
 public class ProductServiceImpl implements ProductService {
-    private final ProductRepositoryImpl productRepository;
-    private final ImageRepositoryImpl imageRepository;
+    private final ProductRepository productRepository;
+    private final ImageRepository imageRepository;
     private final ProductConverter productConverter;
     private final ImageConverter imageConverter;
 
-    public ProductServiceImpl(ProductRepositoryImpl productRepository, ImageRepositoryImpl imageRepository, ProductConverter productConverter, ImageConverter imageConverter) {
+    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, ProductConverter productConverter, ImageConverter imageConverter) {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.productConverter = productConverter;
@@ -34,22 +34,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product create(Product entity) {
-        return productRepository.create(entity);
+        return productRepository.save(entity);
     }
 
     @Override
     public List<Product> read() {
-        return productRepository.read();
+        return productRepository.findAll();
     }
 
     @Override
     public Product update(Product entity) {
-        return productRepository.update(entity);
+        Optional<Product> product = productRepository.findById(entity.getId());
+        if (product.isPresent()) {
+            return productRepository.save(entity);
+        }
+        log.error("Product doesn't exist");
+        return null;
     }
 
     @Override
     public void delete(int id) {
-        productRepository.delete(id);
+        productRepository.deleteById(id);
     }
 
     @Override
@@ -83,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto updateProduct(ProductDto productDto) throws UpdateException {
         try {
             Product product = productConverter.fromDto(productDto);
-            Product updatedProduct = productRepository.update(product);
+            Product updatedProduct = productRepository.save(product);
             return productConverter.toDto(updatedProduct);
         } catch (Exception e) {
             throw new UpdateException("Product cannot be updated");
@@ -102,19 +107,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean checkProductExists(Product product) {
-        Product productFromDB = productRepository.getProductByName(product.getName());
-        return Optional.ofNullable(productFromDB).isPresent();
+        Optional<Product> productFromDB = productRepository.findById(product.getId());
+        return productFromDB.isPresent();
     }
 
     @Override
     public List<ProductDto> getCategoryProductsData(int id) {
-        List<Product> categoryProducts = productRepository.getProductsByCategoryId(id);
+        List<Product> categoryProducts = productRepository.getProductByCategoryId(id);
         return categoryProducts.stream().map(productConverter::toDto).toList();
     }
 
     @Override
     public List<ProductDto> findAllProductsByRequest(String request) {
-        List<Product> products = productRepository.findProductsByRequest(request);
+        List<Product> products = productRepository.findAllByNameOrDescriptionContaining(request);
         return products.stream().map(productConverter::toDto).toList();
     }
 }

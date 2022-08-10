@@ -253,4 +253,14 @@ INSERT INTO `eshop`.`order_products` (ORDER_ID, PRODUCT_ID, QUANTITY)
 VALUES ('4', '7', '1');
 INSERT INTO `eshop`.`order_products` (ORDER_ID, PRODUCT_ID, QUANTITY)
 VALUES ('4', '8', '3');
-
+--------------------------------------------------------
+--  DML for Table ESHOP.ROLES
+--------------------------------------------------------
+INSERT INTO eshop.roles (id, role) VALUES (1,'ROLE_ADMIN');
+INSERT INTO eshop.roles (id, role) VALUES (2,'ROLE_USER');
+--------------------------------------------------------
+--  DML for Table ESHOP.USER_ROLES
+--------------------------------------------------------
+INSERT INTO eshop.users_roles (user_id, role_id) VALUES (1,1);
+INSERT INTO eshop.users_roles (user_id, role_id) VALUES (1,2);
+INSERT INTO eshop.users_roles (user_id, role_id) VALUES (2,2);
