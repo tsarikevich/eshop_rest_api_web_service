@@ -42,7 +42,7 @@ public class ImageConverter {
                 .primaryFlag(imageDto.isPrimaryFlag())
                 .imagePath(imageDto.getImagePath())
                 .product(productRepository.getProductById(imageDto.getProductId()))
-                .categoryImage(categoryRepository.findById(imageDto.getCategoryId()))
+                .categoryImage(categoryRepository.findById(imageDto.getCategoryId()).get())
                 .build();
     }
 }

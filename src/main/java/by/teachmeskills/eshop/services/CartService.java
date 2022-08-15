@@ -5,9 +5,9 @@ import by.teachmeskills.eshop.dto.converters.CartConverter;
 import by.teachmeskills.eshop.entities.Cart;
 import by.teachmeskills.eshop.entities.Order;
 import by.teachmeskills.eshop.entities.Product;
+import by.teachmeskills.eshop.repositories.OrderRepository;
+import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.repositories.UserRepository;
-import by.teachmeskills.eshop.repositories.impl.OrderRepositoryImpl;
-import by.teachmeskills.eshop.repositories.impl.ProductRepositoryImpl;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,12 @@ import java.time.LocalDateTime;
 @Service
 @Log4j
 public class CartService {
-    private final ProductRepositoryImpl productRepository;
-    private final OrderRepositoryImpl orderRepository;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
     private final CartConverter cartConverter;
     private final UserRepository userRepository;
 
-    public CartService(ProductRepositoryImpl productRepository, OrderRepositoryImpl orderRepository, CartConverter cartConverter, UserRepository userRepository) {
+    public CartService(ProductRepository productRepository, OrderRepository orderRepository, CartConverter cartConverter, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
         this.cartConverter = cartConverter;
@@ -55,10 +55,10 @@ public class CartService {
             Order order = Order.builder()
                     .price(cart.getTotalPrice())
                     .date(LocalDateTime.now())
-                    .user(userRepository.findUserById(userId))
+                    .user(userRepository.findById(userId).get())
                     .products(cart.getProducts())
                     .build();
-            orderRepository.create(order);
+            orderRepository.save(order);
             cart.clear();
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -36,7 +36,7 @@ public class ProductConverter {
                 .description(productDto.getDescription())
                 .price(productDto.getPrice())
                 .images(imageRepository.getImagesByProductId(productDto.getId()))
-                .category(categoryRepository.findById(productDto.getCategoryId()))
+                .category(categoryRepository.findById(productDto.getCategoryId()).get())
                 .build();
     }
 }
